@@ -1,32 +1,40 @@
-# TANDA pre-launch website
+# TANDA website
 
-A single-page, bilingual (English/Español) marketing site with a waitlist. It is plain HTML, CSS and JS with no build step. Its content follows the PRD v1.1 and MRD v1.0 in `docs/`.
+A static, bilingual (English/Español) website for TANDA's pre-launch phase, with a waitlist. Its content follows the PRD v1.1 and MRD v1.0 in `docs/`.
 
-## Run it
-
-Open `index.html` in a browser, or serve the folder with any static host (GitHub Pages, Netlify, Vercel, S3):
+**Don't edit the HTML in `site/` directly.** It is generated from `src/site/` by `scripts/build_site.py`. Edit the source, rebuild, and commit both.
 
 ```sh
-python3 -m http.server -d site 8000
+python3 scripts/build_site.py         # rebuild site/ (Python 3.9+, no dependencies)
+python3 -m http.server -d site 8000   # preview at http://localhost:8000
 ```
+
+## Structure
+
+| Path | What it is |
+|---|---|
+| `src/site/pages/en/` | English page sources. Each starts with a front-matter comment (title, description, nav, layout). |
+| `src/site/pages/es/` | Spanish page sources, with the same file names. The build fails if a page exists in only one language. |
+| `src/site/assets/` | Shared CSS, JS and favicon, copied to `site/assets/`. |
+| `scripts/build_site.py` | Wraps each page in the shared header and footer, builds the legal table of contents, and fills in contact details. |
+
+Pages: home, Banking, Help & safety, Pricing, About, FAQ, Waitlist, and the legal section: Legal center, Important disclosures, Privacy notice, Terms of use, Accessibility statement. Spanish versions are under `/es/`.
+
+**Layouts:** `marketing` uses the brand treatment (papel picado, folk-art flowers). `legal` is a plain document layout with breadcrumbs, last-updated date, a table of contents built from `<h2>` headings, and print styles.
+
+**Disclosure references:** superscript numbers on marketing pages link to the matching numbered section of `legal/disclosures.html` (for example, `#d6` for TANDA Spot). Keep the numbers in sync if you add or reorder sections.
 
 ## Deploy on Vercel
 
-`vercel.json` at the repo root serves `site/` with Vercel's static builder. Its `builds` setting overrides the dashboard's framework preset, install and build commands, so nothing gets installed or built. Leave the project's Root Directory as the repo root.
-
-## How it works
-
-- **Language:** English is in the HTML. Spanish lives in the `es` dictionary in the inline script. Keys match the `data-i18n` attributes. The visitor's choice is remembered. A `#es` link opens the site in Spanish, and Spanish browsers default to it.
-- **Theme:** light and dark follow the visitor's system setting. Colors are tokens in `:root`, using the PRD v1.1 palette.
-- **Waitlist:** set `data-endpoint` on `<form id="join">` to a URL that accepts a JSON `POST` (HubSpot, Formspree, your own API). **Until it's set, sign-ups are not sent anywhere.** The form still shows the confirmation and logs a console warning.
+`vercel.json` at the repo root serves `site/` with Vercel's static builder. Its `builds` setting overrides the dashboard's framework preset, so nothing gets installed or built on Vercel; it serves the committed `site/` folder. Leave the project's Root Directory as the repo root.
 
 ## Before going live
 
-These come from the MRD's compliance guardrails and acceptance criteria:
-
-- [ ] Get the Spanish copy professionally translated and reviewed. The current Spanish is a draft.
-- [ ] Have legal/compliance and the partner bank review every claim and disclosure.
-- [ ] Wire the waitlist endpoint and add a privacy policy link.
-- [ ] Name the partner bank in the footer and FAQ only once it is contracted and approved.
-- [ ] Replace the concept card art and papel picado with commissioned or licensed original artwork.
-- [ ] Run an accessibility audit (WCAG 2.2 AA) with real screen readers.
+- [ ] **Legal review.** The disclosures, privacy notice, terms and accessibility statement are drafts written from the PRD and MRD. Counsel and the partner bank must review them, including governing law and any dispute-resolution terms.
+- [ ] **Contact details.** Fill in `CONTACT` (and `SITE_URL` for canonical/hreflang tags) at the top of `scripts/build_site.py`, then rebuild. Until then, legal pages say contact details will be published before accounts open.
+- [ ] **Waitlist endpoint.** Set `data-endpoint` on `<form id="join">` in both `waitlist.html` sources to a URL that accepts a JSON `POST`. **Until it's set, sign-ups are not sent anywhere**, though visitors still see the confirmation.
+- [ ] **Privacy notice accuracy.** Update it if you add analytics, cookies or an email provider.
+- [ ] **Spanish.** Get a professional translation review. The current Spanish is a draft.
+- [ ] **Partner bank.** Name it only once it is contracted and approved.
+- [ ] **Artwork.** Replace the concept card art and papel picado with commissioned or licensed original work.
+- [ ] **Accessibility audit.** Run a WCAG 2.2 AA audit with real assistive technology.

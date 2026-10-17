@@ -31,7 +31,7 @@ TANDA is a concept for a bilingual (English/Spanish), digital-first U.S. consume
 
 ## Website
 
-The pre-launch marketing site is in [`site/`](site/). It's a static bilingual page with a waitlist. See [`site/README.md`](site/README.md) for setup and the pre-launch checklist.
+The pre-launch website is in [`site/`](site/). It has bilingual marketing pages, a waitlist, and a legal section with disclosures, privacy notice, terms and accessibility statement. It's generated from `src/site/` by `scripts/build_site.py`. See [`site/README.md`](site/README.md) for structure, deployment and the pre-launch checklist.
 
 ## Documents
 
