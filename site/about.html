@@ -6,10 +6,11 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>About | tanda.</title>
 <meta name="description" content="Why TANDA exists, what the name means, and how we plan to work with the communities we serve.">
+<meta name="theme-color" content="#00573D">
 <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=Public+Sans:ital,wght@0,400;0,600;0,700;1,400&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Albert+Sans:ital,wght@0,400;0,600;0,700;0,800;1,400&display=swap">
 <link rel="stylesheet" href="assets/styles.css">
 </head>
 <body class="layout-marketing">
@@ -26,50 +27,128 @@
       <ellipse cx="0" cy="-27" rx="12" ry="22" transform="rotate(270)"/>
       <ellipse cx="0" cy="-27" rx="12" ry="22" transform="rotate(315)"/>
     </g>
-    <mask id="cut" maskContentUnits="userSpaceOnUse">
-      <path d="M0 0H64V66L58 72L52 66L46 72L40 66L34 72L28 66L22 72L16 66L10 72L4 66L0 70Z" fill="#fff"/>
-      <g fill="#000">
-        <g transform="translate(32 30) scale(0.3)"><use href="#flor"/></g>
-        <circle cx="32" cy="30" r="3.2" fill="#fff"/>
-        <path d="M10 8l4 4-4 4-4-4z M54 8l4 4-4 4-4-4z M10 46l4 4-4 4-4-4z M54 46l4 4-4 4-4-4z"/>
-        <circle cx="32" cy="8" r="2.2"/><circle cx="32" cy="54" r="2.2"/>
-        <circle cx="8" cy="30" r="2.2"/><circle cx="56" cy="30" r="2.2"/>
-        <rect x="4" y="60" width="56" height="2"/>
-      </g>
-    </mask>
+    <g id="i-checking"><rect x="3" y="6" width="18" height="13" rx="2"/><path d="M3 10h18"/><circle cx="16.5" cy="14.5" r="1"/></g>
+    <g id="i-savings"><circle cx="12" cy="12" r="8.5"/><circle cx="12" cy="12" r="4.5"/><circle cx="12" cy="12" r="0.8"/></g>
+    <g id="i-card"><rect x="2.5" y="5.5" width="19" height="13" rx="2"/><path d="M2.5 10h19M6 15h4"/></g>
+    <g id="i-transfer"><path d="M4 8h15l-3.5-3.5M20 16H5l3.5 3.5"/></g>
+    <g id="i-spot"><path d="M3 12a9 9 0 0 1 18 0z"/><path d="M12 12v6a2 2 0 0 0 4 0"/></g>
+    <g id="i-plus"><path d="M12 3.5l2.6 5.3 5.9.9-4.3 4.1 1 5.8-5.2-2.7-5.2 2.7 1-5.8-4.3-4.1 5.9-.9z"/></g>
+    <g id="i-assist"><path d="M4 5h16v11H9.5L5 19.5V16H4z"/><path d="M10.2 8.8a1.9 1.9 0 1 1 2.6 1.8c-.5.2-.8.6-.8 1.1v.4"/><circle cx="12" cy="13.6" r="0.4"/></g>
+    <g id="i-shield"><path d="M12 3l7.5 3v6c0 4.5-3.2 7.6-7.5 9-4.3-1.4-7.5-4.5-7.5-9V6z"/><path d="M8.8 12l2.2 2.2 4.2-4.4"/></g>
+    <g id="i-people"><circle cx="9" cy="8" r="3"/><path d="M3.5 19.5a5.5 5.5 0 0 1 11 0"/><circle cx="17" cy="9" r="2.4"/><path d="M15.8 14.2a4.6 4.6 0 0 1 5.2 4.8"/></g>
+    <g id="i-phone"><rect x="7" y="2.5" width="10" height="19" rx="2"/><path d="M11 18.5h2"/></g>
+    <g id="i-monitor"><rect x="3" y="4" width="18" height="12" rx="1.5"/><path d="M8.5 20h7M12 16v4"/></g>
+    <g id="i-lock"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></g>
   </defs>
 </svg>
+<div class="utility">
+  <div class="wrap">
+    <p>Coming to California and Texas. Accounts are not open yet.</p>
+    <nav aria-label="Quick links">
+      <a href="help-and-safety.html#shield">Security</a>
+      <a href="faq.html">FAQ</a>
+      <a href="legal/index.html">Legal</a>
+      <a class="lang-switch" href="es/about.html" hreflang="es" lang="es" title="Ver esta página en español">Español</a>
+    </nav>
+  </div>
+</div>
 <header class="site-header">
   <div class="wrap">
-    <a class="wordmark" href="index.html" aria-label="tanda. home">tanda<span class="dot">.</span></a>
+    <a class="wordmark" href="index.html" aria-label="tanda. home">tanda.</a>
     <button class="menu-btn" type="button" aria-expanded="false" aria-controls="site-nav">Menu</button>
     <nav class="nav" id="site-nav" aria-label="Main">
-      <a href="banking.html">Banking</a>
-      <a href="help-and-safety.html">Help & safety</a>
-      <a href="pricing.html">Pricing</a>
-      <a href="about.html" aria-current="page">About</a>
-      <a href="faq.html">FAQ</a>
+      <ul>
+        <li class="nav-item">
+          <button class="nav-trigger" type="button" aria-expanded="false" aria-controls="mega-banking">Banking</button>
+          <div class="mega" id="mega-banking">
+            <div class="mega-inner">
+            <ul class="mega-links">
+              <li><a href="banking.html"><strong>Banking overview</strong><span>Everything planned for everyday money</span></a></li>
+              <li><a href="banking.html#checking"><strong>Checking</strong><span>Direct deposit, clear status, statements</span></a></li>
+              <li><a href="banking.html#savings"><strong>Savings</strong><span>Named goals, automatic transfers, round-ups</span></a></li>
+              <li><a href="banking.html#cards"><strong>Debit cards</strong><span>Virtual right away, physical by mail</span></a></li>
+              <li><a href="banking.html#transfers"><strong>Transfers</strong><span>Free standard ACH, optional instant</span></a></li>
+              <li><a href="banking.html#overdraft"><strong>Overdraft coverage</strong><span>TANDA Spot and Savings Backup</span></a></li>
+            </ul>
+            <div class="mega-promo" style="--promo: var(--sol)">
+              <strong>No planned monthly fee</strong>
+              <p>Our goal for core checking and savings.</p>
+              <a class="text-link" href="pricing.html">See planned pricing</a>
+            </div>
+            </div>
+          </div>
+        </li>
+        <li class="nav-item">
+          <button class="nav-trigger" type="button" aria-expanded="false" aria-controls="mega-help">Help & safety</button>
+          <div class="mega" id="mega-help">
+            <div class="mega-inner">
+            <ul class="mega-links">
+              <li><a href="help-and-safety.html"><strong>Help & safety overview</strong><span>How we help and protect you</span></a></li>
+              <li><a href="help-and-safety.html#assist"><strong>TANDA Assist</strong><span>Answers in English or Spanish</span></a></li>
+              <li><a href="help-and-safety.html#shield"><strong>TANDA Shield</strong><span>Scam warnings and Emergency Lock</span></a></li>
+              <li><a href="help-and-safety.html#trusted-helper"><strong>Trusted Helper</strong><span>Family guidance, your control</span></a></li>
+              <li><a href="help-and-safety.html#support"><strong>Talk to a person</strong><span>Bilingual chat and phone</span></a></li>
+            </ul>
+            <div class="mega-promo" style="--promo: var(--talavera)">
+              <strong>Assist never moves money</strong>
+              <p>It can explain and guide, but every action needs your confirmation.</p>
+              <a class="text-link" href="help-and-safety.html#assist">How Assist works</a>
+            </div>
+            </div>
+          </div>
+        </li>
+        <li class="nav-item">
+          <button class="nav-trigger" type="button" aria-expanded="false" aria-controls="mega-pricing">Pricing</button>
+          <div class="mega" id="mega-pricing">
+            <div class="mega-inner">
+            <ul class="mega-links">
+              <li><a href="pricing.html#fees"><strong>Planned fees</strong><span>Every planned fee in one table</span></a></li>
+              <li><a href="pricing.html#tanda-plus"><strong>TANDA+</strong><span>Optional membership, $7.99/month</span></a></li>
+              <li><a href="pricing.html#rewards"><strong>TANDA Rewards</strong><span>Offers from local and national merchants</span></a></li>
+              <li><a href="legal/disclosures.html"><strong>Important disclosures</strong><span>Conditions behind every claim</span></a></li>
+            </ul>
+            <div class="mega-promo" style="--promo: var(--bugambilia)">
+              <strong>TANDA Spot: up to $50</strong>
+              <p>Fee-free overdraft coverage for eligible customers.</p>
+              <a class="text-link" href="banking.html#overdraft">About TANDA Spot</a>
+            </div>
+            </div>
+          </div>
+        </li>
+        <li class="nav-item current">
+          <button class="nav-trigger" type="button" aria-expanded="false" aria-controls="mega-about">About</button>
+          <div class="mega" id="mega-about">
+            <div class="mega-inner">
+            <ul class="mega-links">
+              <li><a href="about.html#story"><strong>Our story</strong><span>Why TANDA exists</span></a></li>
+              <li><a href="about.html#commitments"><strong>Our commitments</strong><span>How we plan to work</span></a></li>
+              <li><a href="faq.html"><strong>FAQ</strong><span>Straight answers</span></a></li>
+              <li><a href="legal/index.html"><strong>Legal center</strong><span>Disclosures, privacy and terms</span></a></li>
+            </ul>
+            <div class="mega-promo" style="--promo: var(--verde)">
+              <strong>Not a savings circle</strong>
+              <p>Our name honors a tradition of trust. Your money stays in your own account.</p>
+              <a class="text-link" href="about.html#story">Read our story</a>
+            </div>
+            </div>
+          </div>
+        </li>
+      </ul>
     </nav>
-    <div class="header-actions">
-      <a class="lang-switch" href="es/about.html" hreflang="es" lang="es" title="Ver esta página en español">Español</a>
-      <a class="btn btn-primary header-cta" href="waitlist.html">Join the waitlist</a>
-    </div>
+    <a class="btn btn-primary header-cta" href="waitlist.html">Join the waitlist</a>
   </div>
 </header>
 <main id="main">
-<svg class="picado small" viewBox="0 0 1220 120" preserveAspectRatio="xMidYMin slice" aria-hidden="true" focusable="false">
-  <path d="M0 10 Q610 34 1220 10" fill="none" style="stroke: var(--ink-soft)" stroke-width="1.5"/>
-  <g data-flags></g>
-</svg>
 <section class="page-hero">
   <div class="wrap">
+    <nav class="crumbs" aria-label="Breadcrumb"><a href="index.html">Home</a><span aria-hidden="true">/</span><span aria-current="page">About</span></nav>
     <p class="eyebrow">About TANDA</p>
     <h1>Modern banking with the warmth of a community institution</h1>
     <p class="lede">We're building a bilingual, digital-first way to bank that's precise about money and warm about people.</p>
   </div>
 </section>
 
-<section class="section band" aria-label="Our story">
+<section class="section band" id="story" aria-label="Our story">
   <div class="wrap">
     <div class="split">
       <div class="split-copy">
@@ -103,7 +182,7 @@
   </div>
 </section>
 
-<section class="section" aria-labelledby="principles-title">
+<section class="section" id="commitments" aria-labelledby="principles-title">
   <div class="wrap">
     <div class="section-head">
       <p class="eyebrow">How we work</p>
@@ -132,19 +211,28 @@
 
 </main>
 <footer class="site-footer">
-  <div class="tile-strip" aria-hidden="true"></div>
-  <div class="wrap">
-    <div class="footer-grid">
+  <div class="palette-strip" aria-hidden="true"><span></span><span></span><span></span><span></span><span></span><span></span></div>
+  <div class="footer-top">
+    <div class="wrap">
       <div class="footer-brand">
-        <a class="wordmark" href="index.html">tanda<span class="dot">.</span></a>
+        <a class="wordmark" href="index.html">tanda.</a>
+        <p>Bilingual, digital-first banking for every generation. Planned for California and Texas.</p>
       </div>
-      <div class="footer-col"><p class="footer-title">Product</p><ul><li><a href="banking.html">Banking</a></li><li><a href="help-and-safety.html">Help & safety</a></li><li><a href="pricing.html">Pricing</a></li></ul></div>
-      <div class="footer-col"><p class="footer-title">Company</p><ul><li><a href="about.html">About</a></li><li><a href="faq.html">FAQ</a></li><li><a href="waitlist.html">Waitlist</a></li></ul></div>
-      <div class="footer-col"><p class="footer-title">Legal</p><ul><li><a href="legal/disclosures.html">Important disclosures</a></li><li><a href="legal/privacy.html">Privacy notice</a></li><li><a href="legal/terms.html">Terms of use</a></li><li><a href="legal/accessibility.html">Accessibility</a></li><li><a href="legal/index.html">Legal center</a></li></ul></div>
+      <div class="footer-col"><p class="footer-title">Banking</p><ul><li><a href="banking.html#checking">Checking</a></li><li><a href="banking.html#savings">Savings</a></li><li><a href="banking.html#cards">Debit cards</a></li><li><a href="banking.html#transfers">Transfers</a></li><li><a href="pricing.html">Pricing</a></li></ul></div>
+      <div class="footer-col"><p class="footer-title">Help & safety</p><ul><li><a href="help-and-safety.html#assist">TANDA Assist</a></li><li><a href="help-and-safety.html#shield">TANDA Shield</a></li><li><a href="help-and-safety.html#trusted-helper">Trusted Helper</a></li><li><a href="faq.html">FAQ</a></li></ul></div>
+      <div class="footer-col"><p class="footer-title">Company</p><ul><li><a href="about.html">About TANDA</a></li><li><a href="about.html#commitments">Our commitments</a></li><li><a href="waitlist.html">Join the waitlist</a></li></ul></div>
+      <div class="footer-col"><p class="footer-title">Legal</p><ul><li><a href="legal/disclosures.html">Important disclosures</a></li><li><a href="legal/privacy.html">Privacy notice</a></li><li><a href="legal/terms.html">Terms of use</a></li><li><a href="legal/accessibility.html">Accessibility</a></li></ul></div>
     </div>
-    <div class="footer-legal">
-      <p>TANDA is a financial technology company, not a bank. Banking services will be provided by an FDIC-insured partner bank, to be named. TANDA accounts are not yet available, and nothing on this site is an offer to open an account. Features, fees and benefits described are planned and may change. See <a href="legal/disclosures.html">Important disclosures</a>.</p>
-      <p>&copy; 2026 TANDA. All rights reserved.</p>
+  </div>
+  <div class="footer-legal">
+    <div class="wrap">
+      <p class="not-bank">TANDA is a financial technology company, not a bank.</p>
+      <p>Banking services will be provided by an FDIC-insured partner bank, to be named. TANDA accounts are not yet available, and nothing on this site is an offer to open an account or an offer of credit. Products, features, fees and benefits described are planned, depend on partner-bank approval and regulatory review, and may change.</p>
+      <p>Superscript numbers refer to the numbered sections of our <a href="legal/disclosures.html">Important disclosures</a>.</p>
+      <div class="footer-bottom">
+        <p>&copy; 2026 TANDA. All rights reserved.</p>
+        <p><a href="es/about.html" hreflang="es" lang="es">Español</a></p>
+      </div>
     </div>
   </div>
 </footer>

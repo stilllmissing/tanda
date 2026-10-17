@@ -1,5 +1,5 @@
 (function () {
-  // Mobile menu
+  // Mobile menu button
   var menuBtn = document.querySelector(".menu-btn");
   var nav = document.getElementById("site-nav");
   if (menuBtn && nav) {
@@ -9,27 +9,36 @@
     });
   }
 
-  // Papel picado: fill any <g data-flags> with flags that follow the string's curve.
-  var ns = "http://www.w3.org/2000/svg";
-  var colors = ["#D63837", "#F6B934", "#2D8050", "#EBA38D", "#2D60AC"];
-  document.querySelectorAll("g[data-flags]").forEach(function (group) {
-    for (var i = 0; i < 19; i++) {
-      var x = 6 + i * 64;
-      var t = x / 1220;
-      var y = 10 + 4 * t * (1 - t) * 24;
-      var g = document.createElementNS(ns, "g");
-      g.setAttribute("class", "flag-wrap");
-      g.setAttribute("transform", "translate(" + x + " " + (y - 2) + ")");
-      var flag = document.createElementNS(ns, "rect");
-      flag.setAttribute("class", "flag");
-      flag.setAttribute("width", "60");
-      flag.setAttribute("height", "74");
-      flag.setAttribute("fill", colors[i % colors.length]);
-      flag.setAttribute("mask", "url(#cut)");
-      flag.setAttribute("transform", "scale(0.94 1.18)");
-      g.appendChild(flag);
-      group.appendChild(g);
-    }
+  // Mega menus: one open at a time; Escape or a click outside closes.
+  var triggers = Array.prototype.slice.call(document.querySelectorAll(".nav-trigger"));
+  function closeAll(except) {
+    triggers.forEach(function (t) {
+      if (t === except) return;
+      t.setAttribute("aria-expanded", "false");
+      document.getElementById(t.getAttribute("aria-controls")).classList.remove("open");
+    });
+  }
+  triggers.forEach(function (t) {
+    t.addEventListener("click", function () {
+      var panel = document.getElementById(t.getAttribute("aria-controls"));
+      var open = t.getAttribute("aria-expanded") !== "true";
+      closeAll(t);
+      t.setAttribute("aria-expanded", String(open));
+      panel.classList.toggle("open", open);
+    });
+  });
+  document.addEventListener("keydown", function (e) {
+    if (e.key !== "Escape") return;
+    var open = triggers.filter(function (t) { return t.getAttribute("aria-expanded") === "true"; })[0];
+    closeAll();
+    if (open) open.focus();
+  });
+  document.addEventListener("click", function (e) {
+    if (!e.target.closest(".nav-item")) closeAll();
+  });
+  // Following an in-page link from a menu closes it.
+  document.querySelectorAll(".mega a").forEach(function (a) {
+    a.addEventListener("click", function () { closeAll(); if (nav) nav.classList.remove("open"); });
   });
 
   // Legal table of contents: always open on wide screens, collapsed on phones.
@@ -48,44 +57,42 @@
         var link = byId[e.target.id];
         if (link) link.classList.add("active");
       });
-    }, { rootMargin: "-90px 0px -70% 0px" });
+    }, { rootMargin: "-110px 0px -70% 0px" });
     document.querySelectorAll(".prose h2[id]").forEach(function (h) { observer.observe(h); });
   }
 
-  // Waitlist form. Set data-endpoint on the form to a URL that accepts JSON POSTs.
-  var form = document.getElementById("join");
-  if (!form) return;
-  var thanks = document.getElementById("thanks");
-  var email = document.getElementById("wl-email");
-  var consent = document.getElementById("wl-consent");
-  var emailErr = document.getElementById("wl-email-err");
-  var consentErr = document.getElementById("wl-consent-err");
-  var sendErr = document.getElementById("wl-send-err");
+  // Waitlist forms. The endpoint comes from WAITLIST_ENDPOINT in scripts/build_site.py.
+  document.querySelectorAll("form.join").forEach(function (form) {
+    var q = function (sel) { return form.querySelector(sel); };
+    var email = q("[data-role=email]");
+    var consent = q("[data-role=consent]");
+    var emailErr = q("[data-role=email-err]");
+    var consentErr = q("[data-role=consent-err]");
+    var sendErr = q("[data-role=send-err]");
+    var thanks = document.getElementById(form.dataset.thanks);
 
-  function check() {
-    var okEmail = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email.value.trim());
-    email.setAttribute("aria-invalid", String(!okEmail));
-    emailErr.hidden = okEmail;
-    consentErr.hidden = consent.checked;
-    if (!okEmail) { email.focus(); return false; }
-    if (!consent.checked) { consent.focus(); return false; }
-    return true;
-  }
+    form.addEventListener("submit", function (e) {
+      e.preventDefault();
+      sendErr.hidden = true;
+      var okEmail = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email.value.trim());
+      email.setAttribute("aria-invalid", String(!okEmail));
+      emailErr.hidden = okEmail;
+      consentErr.hidden = consent.checked;
+      if (!okEmail) { email.focus(); return; }
+      if (!consent.checked) { consent.focus(); return; }
 
-  form.addEventListener("submit", function (e) {
-    e.preventDefault();
-    sendErr.hidden = true;
-    if (!check()) return;
-    var data = Object.fromEntries(new FormData(form).entries());
-    data.consent = true;
-    data.page_language = document.documentElement.lang;
-    var done = function () { form.hidden = true; thanks.hidden = false; thanks.focus(); };
-    var endpoint = form.dataset.endpoint;
-    if (!endpoint) { console.warn("TANDA waitlist: no endpoint set; submission not sent.", data); done(); return; }
-    var btn = form.querySelector("button[type=submit]");
-    btn.disabled = true;
-    fetch(endpoint, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(data) })
-      .then(function (r) { if (!r.ok) throw new Error(String(r.status)); done(); })
-      .catch(function () { btn.disabled = false; sendErr.hidden = false; });
+      var data = Object.fromEntries(new FormData(form).entries());
+      data.consent = true;
+      if (!data.language) data.language = document.documentElement.lang;
+      data.page_language = document.documentElement.lang;
+      var done = function () { form.hidden = true; thanks.hidden = false; thanks.focus(); };
+      var endpoint = form.dataset.endpoint;
+      if (!endpoint) { console.warn("TANDA waitlist: no endpoint set; submission not sent.", data); done(); return; }
+      var btn = q("button[type=submit]");
+      btn.disabled = true;
+      fetch(endpoint, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(data) })
+        .then(function (r) { if (!r.ok) throw new Error(String(r.status)); done(); })
+        .catch(function () { btn.disabled = false; sendErr.hidden = false; });
+    });
   });
 })();

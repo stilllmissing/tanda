@@ -2,8 +2,9 @@
 """Build the static TANDA website.
 
 Reads page sources from src/site/pages/{en,es}/, wraps them in the shared
-layout, and writes finished HTML to site/ (which Vercel serves as-is).
-Standard library only. Run from the repo root:
+layout (utility bar, header with mega menus, footer), and writes finished
+HTML to site/, which Vercel serves as-is. Standard library only. Run from
+the repo root:
 
     python3 scripts/build_site.py
 
@@ -12,14 +13,16 @@ Page sources start with a front-matter comment:
     <!--
     title: Pricing
     description: One-sentence summary for search engines.
-    nav: pricing            # which nav item is active (optional)
+    nav: pricing            # which main-nav item is active (optional)
     layout: marketing       # marketing | legal
     updated: October 17, 2026   # legal pages only
+    applies: tanda website      # legal pages only (optional)
     -->
 
 Inside a page, {{root}} expands to the relative path to the site root for
-that language, {{site}} to the relative path to the site/ folder, and
-{{contact:KEY}} to the contact detail KEY from CONTACT below.
+that language, {{site}} to the relative path to the site/ folder,
+{{endpoint}} to WAITLIST_ENDPOINT, and {{contact:KEY}} to the contact
+detail KEY from CONTACT below.
 """
 
 import html
@@ -31,8 +34,9 @@ ROOT = Path(__file__).resolve().parent.parent
 SRC = ROOT / "src" / "site"
 OUT = ROOT / "site"
 
-# Fill these in before launch. Empty values render a neutral fallback sentence.
+# Fill these in before launch. Empty contact values render a neutral fallback sentence.
 SITE_URL = ""  # e.g. "https://www.example.com" — enables canonical and hreflang tags
+WAITLIST_ENDPOINT = ""  # URL that accepts a JSON POST. Empty = sign-ups are not sent anywhere.
 CONTACT = {
     "privacy_email": "",
     "support_email": "",
@@ -43,28 +47,96 @@ CONTACT = {
 
 LANGS = ("en", "es")
 
+# Main navigation. Each item opens a mega menu: links (label, description) plus a promo panel.
+NAV = {
+    "en": [
+        {"key": "banking", "label": "Banking", "links": [
+            ("banking.html", "Banking overview", "Everything planned for everyday money"),
+            ("banking.html#checking", "Checking", "Direct deposit, clear status, statements"),
+            ("banking.html#savings", "Savings", "Named goals, automatic transfers, round-ups"),
+            ("banking.html#cards", "Debit cards", "Virtual right away, physical by mail"),
+            ("banking.html#transfers", "Transfers", "Free standard ACH, optional instant"),
+            ("banking.html#overdraft", "Overdraft coverage", "TANDA Spot and Savings Backup"),
+        ], "promo": ("var(--sol)", "No planned monthly fee", "Our goal for core checking and savings.", "pricing.html", "See planned pricing")},
+        {"key": "help", "label": "Help & safety", "links": [
+            ("help-and-safety.html", "Help & safety overview", "How we help and protect you"),
+            ("help-and-safety.html#assist", "TANDA Assist", "Answers in English or Spanish"),
+            ("help-and-safety.html#shield", "TANDA Shield", "Scam warnings and Emergency Lock"),
+            ("help-and-safety.html#trusted-helper", "Trusted Helper", "Family guidance, your control"),
+            ("help-and-safety.html#support", "Talk to a person", "Bilingual chat and phone"),
+        ], "promo": ("var(--talavera)", "Assist never moves money", "It can explain and guide, but every action needs your confirmation.", "help-and-safety.html#assist", "How Assist works")},
+        {"key": "pricing", "label": "Pricing", "links": [
+            ("pricing.html#fees", "Planned fees", "Every planned fee in one table"),
+            ("pricing.html#tanda-plus", "TANDA+", "Optional membership, $7.99/month"),
+            ("pricing.html#rewards", "TANDA Rewards", "Offers from local and national merchants"),
+            ("legal/disclosures.html", "Important disclosures", "Conditions behind every claim"),
+        ], "promo": ("var(--bugambilia)", "TANDA Spot: up to $50", "Fee-free overdraft coverage for eligible customers.", "banking.html#overdraft", "About TANDA Spot")},
+        {"key": "about", "label": "About", "links": [
+            ("about.html#story", "Our story", "Why TANDA exists"),
+            ("about.html#commitments", "Our commitments", "How we plan to work"),
+            ("faq.html", "FAQ", "Straight answers"),
+            ("legal/index.html", "Legal center", "Disclosures, privacy and terms"),
+        ], "promo": ("var(--verde)", "Not a savings circle", "Our name honors a tradition of trust. Your money stays in your own account.", "about.html#story", "Read our story")},
+    ],
+    "es": [
+        {"key": "banking", "label": "Banca", "links": [
+            ("banking.html", "Resumen de la banca", "Todo lo previsto para tu dinero diario"),
+            ("banking.html#checking", "Cuenta de cheques", "Depósito directo, estados claros"),
+            ("banking.html#savings", "Ahorros", "Metas con nombre, transferencias automáticas"),
+            ("banking.html#cards", "Tarjetas de débito", "Virtual al instante, física por correo"),
+            ("banking.html#transfers", "Transferencias", "ACH estándar gratis, instantánea opcional"),
+            ("banking.html#overdraft", "Cobertura de sobregiro", "TANDA Spot y Respaldo de Ahorros"),
+        ], "promo": ("var(--sol)", "Sin cargo mensual previsto", "Nuestra meta para las cuentas básicas de cheques y ahorros.", "pricing.html", "Ver precios previstos")},
+        {"key": "help", "label": "Ayuda y seguridad", "links": [
+            ("help-and-safety.html", "Resumen de ayuda y seguridad", "Cómo te ayudamos y protegemos"),
+            ("help-and-safety.html#assist", "TANDA Assist", "Respuestas en español o en inglés"),
+            ("help-and-safety.html#shield", "TANDA Shield", "Avisos de estafa y Bloqueo de Emergencia"),
+            ("help-and-safety.html#trusted-helper", "Persona de Confianza", "Guía de tu familia, control tuyo"),
+            ("help-and-safety.html#support", "Habla con una persona", "Chat y teléfono bilingües"),
+        ], "promo": ("var(--talavera)", "Assist nunca mueve dinero", "Puede explicar y guiar, pero cada acción necesita tu confirmación.", "help-and-safety.html#assist", "Cómo funciona Assist")},
+        {"key": "pricing", "label": "Precios", "links": [
+            ("pricing.html#fees", "Cargos previstos", "Todos los cargos previstos en una tabla"),
+            ("pricing.html#tanda-plus", "TANDA+", "Membresía opcional, $7.99 al mes"),
+            ("pricing.html#rewards", "TANDA Rewards", "Ofertas de comercios locales y nacionales"),
+            ("legal/disclosures.html", "Divulgaciones importantes", "Las condiciones de cada afirmación"),
+        ], "promo": ("var(--bugambilia)", "TANDA Spot: hasta $50", "Cobertura de sobregiro sin cargos para clientes elegibles.", "banking.html#overdraft", "Sobre TANDA Spot")},
+        {"key": "about", "label": "Nosotros", "links": [
+            ("about.html#story", "Nuestra historia", "Por qué existe TANDA"),
+            ("about.html#commitments", "Nuestros compromisos", "Cómo planeamos trabajar"),
+            ("faq.html", "Preguntas frecuentes", "Respuestas directas"),
+            ("legal/index.html", "Centro legal", "Divulgaciones, privacidad y términos"),
+        ], "promo": ("var(--verde)", "No es un círculo de ahorro", "Nuestro nombre honra una tradición de confianza. Tu dinero se queda en tu propia cuenta.", "about.html#story", "Lee nuestra historia")},
+    ],
+}
+
 STRINGS = {
     "en": {
         "skip": "Skip to content",
         "menu": "Menu",
         "nav_label": "Main",
-        "nav": [("banking", "banking.html", "Banking"), ("help", "help-and-safety.html", "Help & safety"),
-                ("pricing", "pricing.html", "Pricing"), ("about", "about.html", "About"), ("faq", "faq.html", "FAQ")],
+        "utility_label": "Quick links",
+        "status": "Coming to California and Texas. Accounts are not open yet.",
+        "utility": [("help-and-safety.html#shield", "Security"), ("faq.html", "FAQ"), ("legal/index.html", "Legal")],
         "cta": "Join the waitlist",
         "switch_label": "Español",
         "switch_title": "Ver esta página en español",
-        "footer_product": "Product",
-        "footer_company": "Company",
-        "footer_legal": "Legal",
-        "footer_links_product": [("banking.html", "Banking"), ("help-and-safety.html", "Help & safety"), ("pricing.html", "Pricing")],
-        "footer_links_company": [("about.html", "About"), ("faq.html", "FAQ"), ("waitlist.html", "Waitlist")],
-        "footer_links_legal": [("legal/disclosures.html", "Important disclosures"), ("legal/privacy.html", "Privacy notice"),
-                               ("legal/terms.html", "Terms of use"), ("legal/accessibility.html", "Accessibility"),
-                               ("legal/index.html", "Legal center")],
-        "footer_note": ("TANDA is a financial technology company, not a bank. Banking services will be provided by an "
-                        "FDIC-insured partner bank, to be named. TANDA accounts are not yet available, and nothing on this "
-                        "site is an offer to open an account. Features, fees and benefits described are planned and may change. "
-                        "See <a href=\"{root}legal/disclosures.html\">Important disclosures</a>."),
+        "home": "Home",
+        "footer_tagline": "Bilingual, digital-first banking for every generation. Planned for California and Texas.",
+        "footer_cols": [
+            ("Banking", [("banking.html#checking", "Checking"), ("banking.html#savings", "Savings"), ("banking.html#cards", "Debit cards"),
+                         ("banking.html#transfers", "Transfers"), ("pricing.html", "Pricing")]),
+            ("Help & safety", [("help-and-safety.html#assist", "TANDA Assist"), ("help-and-safety.html#shield", "TANDA Shield"),
+                               ("help-and-safety.html#trusted-helper", "Trusted Helper"), ("faq.html", "FAQ")]),
+            ("Company", [("about.html", "About TANDA"), ("about.html#commitments", "Our commitments"), ("waitlist.html", "Join the waitlist")]),
+            ("Legal", [("legal/disclosures.html", "Important disclosures"), ("legal/privacy.html", "Privacy notice"),
+                       ("legal/terms.html", "Terms of use"), ("legal/accessibility.html", "Accessibility")]),
+        ],
+        "not_bank": "TANDA is a financial technology company, not a bank.",
+        "footer_note": ("Banking services will be provided by an FDIC-insured partner bank, to be named. TANDA accounts are not yet "
+                        "available, and nothing on this site is an offer to open an account or an offer of credit. Products, features, "
+                        "fees and benefits described are planned, depend on partner-bank approval and regulatory review, and may change."),
+        "footer_refs": ("Superscript numbers refer to the numbered sections of our "
+                        "<a href=\"{root}legal/disclosures.html\">Important disclosures</a>."),
         "rights": "All rights reserved.",
         "legal_center": "Legal center",
         "last_updated": "Last updated",
@@ -78,23 +150,29 @@ STRINGS = {
         "skip": "Ir al contenido",
         "menu": "Menú",
         "nav_label": "Principal",
-        "nav": [("banking", "banking.html", "Banca"), ("help", "help-and-safety.html", "Ayuda y seguridad"),
-                ("pricing", "pricing.html", "Precios"), ("about", "about.html", "Nosotros"), ("faq", "faq.html", "Preguntas")],
+        "utility_label": "Accesos rápidos",
+        "status": "Muy pronto en California y Texas. Las cuentas aún no están disponibles.",
+        "utility": [("help-and-safety.html#shield", "Seguridad"), ("faq.html", "Preguntas"), ("legal/index.html", "Legal")],
         "cta": "Únete a la lista",
         "switch_label": "English",
         "switch_title": "View this page in English",
-        "footer_product": "Producto",
-        "footer_company": "Empresa",
-        "footer_legal": "Legal",
-        "footer_links_product": [("banking.html", "Banca"), ("help-and-safety.html", "Ayuda y seguridad"), ("pricing.html", "Precios")],
-        "footer_links_company": [("about.html", "Nosotros"), ("faq.html", "Preguntas frecuentes"), ("waitlist.html", "Lista de espera")],
-        "footer_links_legal": [("legal/disclosures.html", "Divulgaciones importantes"), ("legal/privacy.html", "Aviso de privacidad"),
-                               ("legal/terms.html", "Términos de uso"), ("legal/accessibility.html", "Accesibilidad"),
-                               ("legal/index.html", "Centro legal")],
-        "footer_note": ("TANDA es una empresa de tecnología financiera, no un banco. Los servicios bancarios los brindará un "
-                        "banco asociado asegurado por la FDIC, que se dará a conocer más adelante. Las cuentas TANDA aún no "
-                        "están disponibles y nada en este sitio es una oferta para abrir una cuenta. Las funciones, cargos y "
-                        "beneficios descritos son planes y pueden cambiar. Consulta las "
+        "home": "Inicio",
+        "footer_tagline": "Banca bilingüe y digital para todas las generaciones. Prevista para California y Texas.",
+        "footer_cols": [
+            ("Banca", [("banking.html#checking", "Cuenta de cheques"), ("banking.html#savings", "Ahorros"), ("banking.html#cards", "Tarjetas de débito"),
+                       ("banking.html#transfers", "Transferencias"), ("pricing.html", "Precios")]),
+            ("Ayuda y seguridad", [("help-and-safety.html#assist", "TANDA Assist"), ("help-and-safety.html#shield", "TANDA Shield"),
+                                   ("help-and-safety.html#trusted-helper", "Persona de Confianza"), ("faq.html", "Preguntas frecuentes")]),
+            ("Empresa", [("about.html", "Sobre TANDA"), ("about.html#commitments", "Nuestros compromisos"), ("waitlist.html", "Lista de espera")]),
+            ("Legal", [("legal/disclosures.html", "Divulgaciones importantes"), ("legal/privacy.html", "Aviso de privacidad"),
+                       ("legal/terms.html", "Términos de uso"), ("legal/accessibility.html", "Accesibilidad")]),
+        ],
+        "not_bank": "TANDA es una empresa de tecnología financiera, no un banco.",
+        "footer_note": ("Los servicios bancarios los brindará un banco asociado asegurado por la FDIC, que se dará a conocer más adelante. "
+                        "Las cuentas TANDA aún no están disponibles y nada en este sitio es una oferta para abrir una cuenta ni una oferta "
+                        "de crédito. Los productos, funciones, cargos y beneficios descritos son planes, dependen de la aprobación del banco "
+                        "asociado y de la revisión regulatoria, y pueden cambiar."),
+        "footer_refs": ("Los números en superíndice remiten a las secciones numeradas de nuestras "
                         "<a href=\"{root}legal/disclosures.html\">Divulgaciones importantes</a>."),
         "rights": "Todos los derechos reservados.",
         "legal_center": "Centro legal",
@@ -108,9 +186,7 @@ STRINGS = {
     },
 }
 
-FONT_LINK = ("https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;"
-             "12..96,800&family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400"
-             "&family=Public+Sans:ital,wght@0,400;0,600;0,700;1,400&display=swap")
+FONT_LINK = "https://fonts.googleapis.com/css2?family=Albert+Sans:ital,wght@0,400;0,600;0,700;0,800;1,400&display=swap"
 
 LAYOUT = """<!doctype html>
 <!-- Generated by scripts/build_site.py from {source}. Edit the source, not this file. -->
@@ -120,6 +196,7 @@ LAYOUT = """<!doctype html>
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>{title}</title>
 <meta name="description" content="{description}">
+<meta name="theme-color" content="#00573D">
 {seo}<link rel="icon" href="{site}assets/favicon.svg" type="image/svg+xml">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -129,34 +206,50 @@ LAYOUT = """<!doctype html>
 <body class="layout-{layout}">
 <a class="skip" href="#main">{skip}</a>
 {sprites}
+<div class="utility">
+  <div class="wrap">
+    <p>{status}</p>
+    <nav aria-label="{utility_label}">
+{utility}
+      <a class="lang-switch" href="{switch_href}" hreflang="{other_lang}" lang="{other_lang}" title="{switch_title}">{switch_label}</a>
+    </nav>
+  </div>
+</div>
 <header class="site-header">
   <div class="wrap">
-    <a class="wordmark" href="{root}index.html" aria-label="tanda. home">tanda<span class="dot">.</span></a>
+    <a class="wordmark" href="{root}index.html" aria-label="tanda. home">tanda.</a>
     <button class="menu-btn" type="button" aria-expanded="false" aria-controls="site-nav">{menu}</button>
     <nav class="nav" id="site-nav" aria-label="{nav_label}">
+      <ul>
 {nav}
+      </ul>
     </nav>
-    <div class="header-actions">
-      <a class="lang-switch" href="{switch_href}" hreflang="{other_lang}" lang="{other_lang}" title="{switch_title}">{switch_label}</a>
-      <a class="btn btn-primary header-cta" href="{root}waitlist.html">{cta}</a>
-    </div>
+    <a class="btn btn-primary header-cta" href="{root}waitlist.html">{cta}</a>
   </div>
 </header>
 <main id="main">
 {main}
 </main>
 <footer class="site-footer">
-  <div class="tile-strip" aria-hidden="true"></div>
-  <div class="wrap">
-    <div class="footer-grid">
+  <div class="palette-strip" aria-hidden="true"><span></span><span></span><span></span><span></span><span></span><span></span></div>
+  <div class="footer-top">
+    <div class="wrap">
       <div class="footer-brand">
-        <a class="wordmark" href="{root}index.html">tanda<span class="dot">.</span></a>
+        <a class="wordmark" href="{root}index.html">tanda.</a>
+        <p>{footer_tagline}</p>
       </div>
 {footer_cols}
     </div>
-    <div class="footer-legal">
+  </div>
+  <div class="footer-legal">
+    <div class="wrap">
+      <p class="not-bank">{not_bank}</p>
       <p>{footer_note}</p>
-      <p>&copy; 2026 TANDA. {rights}</p>
+      <p>{footer_refs}</p>
+      <div class="footer-bottom">
+        <p>&copy; 2026 TANDA. {rights}</p>
+        <p><a href="{switch_href}" hreflang="{other_lang}" lang="{other_lang}">{switch_label}</a></p>
+      </div>
     </div>
   </div>
 </footer>
@@ -167,8 +260,9 @@ LAYOUT = """<!doctype html>
 
 LEGAL_MAIN = """<div class="legal-shell">
   <div class="wrap">
-    <nav class="breadcrumb" aria-label="Breadcrumb"><a href="{root}legal/index.html">{legal_center}</a><span aria-hidden="true">/</span><span aria-current="page">{h1}</span></nav>
+    <nav class="breadcrumb" aria-label="Breadcrumb"><a href="{root}index.html">{home}</a><span aria-hidden="true">/</span>{center_crumb}</nav>
     <header class="doc-head">
+      <p class="eyebrow">tanda. &nbsp;|&nbsp; {legal_center}</p>
       <h1>{h1}</h1>
       <dl class="doc-meta">
         <div><dt>{last_updated_label}</dt><dd>{updated}</dd></div>
@@ -185,6 +279,7 @@ LEGAL_MAIN = """<div class="legal-shell">
   </div>
 </div>"""
 
+# Shared SVG: the folk-art flower and line icons (24-unit grid, stroked).
 SPRITES = """<svg width="0" height="0" class="sprites" aria-hidden="true" focusable="false">
   <defs>
     <g id="flor">
@@ -197,17 +292,18 @@ SPRITES = """<svg width="0" height="0" class="sprites" aria-hidden="true" focusa
       <ellipse cx="0" cy="-27" rx="12" ry="22" transform="rotate(270)"/>
       <ellipse cx="0" cy="-27" rx="12" ry="22" transform="rotate(315)"/>
     </g>
-    <mask id="cut" maskContentUnits="userSpaceOnUse">
-      <path d="M0 0H64V66L58 72L52 66L46 72L40 66L34 72L28 66L22 72L16 66L10 72L4 66L0 70Z" fill="#fff"/>
-      <g fill="#000">
-        <g transform="translate(32 30) scale(0.3)"><use href="#flor"/></g>
-        <circle cx="32" cy="30" r="3.2" fill="#fff"/>
-        <path d="M10 8l4 4-4 4-4-4z M54 8l4 4-4 4-4-4z M10 46l4 4-4 4-4-4z M54 46l4 4-4 4-4-4z"/>
-        <circle cx="32" cy="8" r="2.2"/><circle cx="32" cy="54" r="2.2"/>
-        <circle cx="8" cy="30" r="2.2"/><circle cx="56" cy="30" r="2.2"/>
-        <rect x="4" y="60" width="56" height="2"/>
-      </g>
-    </mask>
+    <g id="i-checking"><rect x="3" y="6" width="18" height="13" rx="2"/><path d="M3 10h18"/><circle cx="16.5" cy="14.5" r="1"/></g>
+    <g id="i-savings"><circle cx="12" cy="12" r="8.5"/><circle cx="12" cy="12" r="4.5"/><circle cx="12" cy="12" r="0.8"/></g>
+    <g id="i-card"><rect x="2.5" y="5.5" width="19" height="13" rx="2"/><path d="M2.5 10h19M6 15h4"/></g>
+    <g id="i-transfer"><path d="M4 8h15l-3.5-3.5M20 16H5l3.5 3.5"/></g>
+    <g id="i-spot"><path d="M3 12a9 9 0 0 1 18 0z"/><path d="M12 12v6a2 2 0 0 0 4 0"/></g>
+    <g id="i-plus"><path d="M12 3.5l2.6 5.3 5.9.9-4.3 4.1 1 5.8-5.2-2.7-5.2 2.7 1-5.8-4.3-4.1 5.9-.9z"/></g>
+    <g id="i-assist"><path d="M4 5h16v11H9.5L5 19.5V16H4z"/><path d="M10.2 8.8a1.9 1.9 0 1 1 2.6 1.8c-.5.2-.8.6-.8 1.1v.4"/><circle cx="12" cy="13.6" r="0.4"/></g>
+    <g id="i-shield"><path d="M12 3l7.5 3v6c0 4.5-3.2 7.6-7.5 9-4.3-1.4-7.5-4.5-7.5-9V6z"/><path d="M8.8 12l2.2 2.2 4.2-4.4"/></g>
+    <g id="i-people"><circle cx="9" cy="8" r="3"/><path d="M3.5 19.5a5.5 5.5 0 0 1 11 0"/><circle cx="17" cy="9" r="2.4"/><path d="M15.8 14.2a4.6 4.6 0 0 1 5.2 4.8"/></g>
+    <g id="i-phone"><rect x="7" y="2.5" width="10" height="19" rx="2"/><path d="M11 18.5h2"/></g>
+    <g id="i-monitor"><rect x="3" y="4" width="18" height="12" rx="1.5"/><path d="M8.5 20h7M12 16v4"/></g>
+    <g id="i-lock"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></g>
   </defs>
 </svg>"""
 
@@ -257,6 +353,33 @@ def contact(key, lang):
     return html.escape(value)
 
 
+def render_nav(lang, root, active):
+    items = []
+    for item in NAV[lang]:
+        mid = f'mega-{item["key"]}'
+        links = "\n".join(
+            f'              <li><a href="{root}{href}"><strong>{label}</strong><span>{desc}</span></a></li>'
+            for href, label, desc in item["links"])
+        color, ptitle, ptext, phref, plink = item["promo"]
+        current = " current" if item["key"] == active else ""
+        items.append(f"""        <li class="nav-item{current}">
+          <button class="nav-trigger" type="button" aria-expanded="false" aria-controls="{mid}">{item["label"]}</button>
+          <div class="mega" id="{mid}">
+            <div class="mega-inner">
+            <ul class="mega-links">
+{links}
+            </ul>
+            <div class="mega-promo" style="--promo: {color}">
+              <strong>{ptitle}</strong>
+              <p>{ptext}</p>
+              <a class="text-link" href="{root}{phref}">{plink}</a>
+            </div>
+            </div>
+          </div>
+        </li>""")
+    return "\n".join(items)
+
+
 def render(path, lang):
     rel = path.relative_to(SRC / "pages" / lang)
     depth = len(rel.parts) - 1
@@ -266,11 +389,12 @@ def render(path, lang):
     meta, content = parse_front_matter(path.read_text(encoding="utf-8"))
 
     def expand(text):
-        text = text.replace("{{root}}", root).replace("{{site}}", site)
+        text = text.replace("{{root}}", root).replace("{{site}}", site).replace("{{endpoint}}", html.escape(WAITLIST_ENDPOINT))
         return re.sub(r"\{\{contact:(\w+)\}\}", lambda m: contact(m.group(1), lang), text)
 
     content = expand(content)
     layout = meta.get("layout", "marketing")
+    is_center = rel.as_posix() == "legal/index.html"
 
     if layout == "legal":
         content, toc = add_heading_ids(content)
@@ -283,31 +407,32 @@ def render(path, lang):
         if meta.get("applies"):
             applies = f'<div><dt>{s["applies_to"]}</dt><dd>{meta["applies"]}</dd></div>'
         note = f'<p class="translation-note">{s["translation_note"]}</p>' if s["translation_note"] else ""
-        main = LEGAL_MAIN.format(root=root, legal_center=s["legal_center"], h1=meta["title"],
-                                 last_updated_label=s["last_updated"], updated=meta.get("updated", ""),
+        if is_center:
+            center_crumb = f'<span aria-current="page">{s["legal_center"]}</span>'
+        else:
+            center_crumb = (f'<a href="{root}legal/index.html">{s["legal_center"]}</a><span aria-hidden="true">/</span>'
+                            f'<span aria-current="page">{meta["title"]}</span>')
+        main = LEGAL_MAIN.format(root=root, home=s["home"], center_crumb=center_crumb, legal_center=s["legal_center"],
+                                 h1=meta["title"], last_updated_label=s["last_updated"], updated=meta.get("updated", ""),
                                  applies=applies, translation_note=note, toc=toc_html, content=content)
     else:
         main = content
+        hero_open = '<section class="page-hero">\n  <div class="wrap">'
+        if hero_open in main:
+            crumbs = (f'\n    <nav class="crumbs" aria-label="Breadcrumb"><a href="{root}index.html">{s["home"]}</a>'
+                      f'<span aria-hidden="true">/</span><span aria-current="page">{meta["title"]}</span></nav>')
+            main = main.replace(hero_open, hero_open + crumbs, 1)
 
-    current = ' aria-current="page"'
-    nav = "\n".join(
-        f'      <a href="{root}{href}"{current if meta.get("nav") == key else ""}>{label}</a>'
-        for key, href, label in s["nav"])
+    utility = "\n".join(f'      <a href="{root}{h}">{t}</a>' for h, t in s["utility"])
 
     def col(title, links):
         items = "".join(f'<li><a href="{root}{h}">{t}</a></li>' for h, t in links)
         return f'      <div class="footer-col"><p class="footer-title">{title}</p><ul>{items}</ul></div>'
 
-    footer_cols = "\n".join([col(s["footer_product"], s["footer_links_product"]),
-                             col(s["footer_company"], s["footer_links_company"]),
-                             col(s["footer_legal"], s["footer_links_legal"])])
+    footer_cols = "\n".join(col(t, links) for t, links in s["footer_cols"])
 
     other = "es" if lang == "en" else "en"
-    # Path from this page to the same page in the other language.
-    if lang == "en":
-        switch_href = root + "es/" + rel.as_posix()
-    else:
-        switch_href = root + "../" + rel.as_posix()
+    switch_href = root + ("es/" if lang == "en" else "../") + rel.as_posix()
 
     seo = ""
     if SITE_URL:
@@ -322,10 +447,12 @@ def render(path, lang):
     return LAYOUT.format(
         source=path.relative_to(ROOT).as_posix(), lang=lang, title=html.escape(title, quote=False),
         description=html.escape(meta.get("description", "")), seo=seo, site=site, font_link=FONT_LINK,
-        layout=layout, skip=s["skip"], sprites=SPRITES, root=root, menu=s["menu"], nav_label=s["nav_label"],
-        nav=nav, switch_href=switch_href, other_lang=other, switch_title=s["switch_title"],
-        switch_label=s["switch_label"], cta=s["cta"], main=main, footer_cols=footer_cols,
-        footer_note=s["footer_note"].format(root=root), rights=s["rights"])
+        layout=layout, skip=s["skip"], sprites=SPRITES, status=s["status"], utility_label=s["utility_label"],
+        utility=utility, root=root, menu=s["menu"], nav_label=s["nav_label"],
+        nav=render_nav(lang, root, meta.get("nav")), switch_href=switch_href, other_lang=other,
+        switch_title=s["switch_title"], switch_label=s["switch_label"], cta=s["cta"], main=main,
+        footer_tagline=s["footer_tagline"], footer_cols=footer_cols, not_bank=s["not_bank"],
+        footer_note=s["footer_note"], footer_refs=s["footer_refs"].format(root=root), rights=s["rights"])
 
 
 def main():

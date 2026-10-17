@@ -3,21 +3,17 @@ title: Join the waitlist
 description: Get updates about TANDA's launch in California and Texas, in English or Spanish.
 layout: marketing
 -->
-<svg class="picado small" viewBox="0 0 1220 120" preserveAspectRatio="xMidYMin slice" aria-hidden="true" focusable="false">
-  <path d="M0 10 Q610 34 1220 10" fill="none" style="stroke: var(--ink-soft)" stroke-width="1.5"/>
-  <g data-flags></g>
-</svg>
 <section class="section waitlist" aria-labelledby="waitlist-title">
   <div class="wrap">
     <div class="waitlist-copy">
       <p class="eyebrow">Waitlist</p>
-      <h1 id="waitlist-title" style="font-size: var(--step-3); font-weight: 800">Be first to hear when we open</h1>
+      <h1 id="waitlist-title" style="font-size: var(--step-4)">Be first to hear when we open</h1>
       <p>We'll send occasional updates about our progress, in the language you choose. You can unsubscribe at any time.</p>
       <p class="notice">This is not an account application. We will never ask for your Social Security number, ITIN, bank details or password on this waitlist.</p>
     </div>
 
     <div>
-      <form class="join" id="join" novalidate data-endpoint="">
+      <form class="join" id="join" novalidate data-endpoint="{{endpoint}}" data-thanks="thanks">
         <div class="field-row">
           <div class="field">
             <label for="wl-name">First name <span class="hint">(optional)</span></label>
@@ -25,8 +21,8 @@ layout: marketing
           </div>
           <div class="field">
             <label for="wl-email">Email</label>
-            <input type="email" id="wl-email" name="email" autocomplete="email" required aria-describedby="wl-email-err">
-            <p class="err" id="wl-email-err" hidden>Enter an email address like name@example.com.</p>
+            <input type="email" id="wl-email" name="email" data-role="email" autocomplete="email" required aria-describedby="wl-email-err">
+            <p class="err" id="wl-email-err" data-role="email-err" hidden>Enter an email address like name@example.com.</p>
           </div>
         </div>
         <div class="field">
@@ -45,11 +41,11 @@ layout: marketing
           </div>
         </fieldset>
         <label class="consent" for="wl-consent">
-          <input type="checkbox" id="wl-consent" name="consent" required aria-describedby="wl-consent-err">
+          <input type="checkbox" id="wl-consent" name="consent" data-role="consent" required aria-describedby="wl-consent-err">
           <span>I agree to receive email updates from TANDA. I understand this is not an application for an account.</span>
         </label>
-        <p class="err" id="wl-consent-err" hidden>Check the box to agree to receive updates.</p>
-        <p class="err" id="wl-send-err" hidden role="alert">We couldn't save your sign-up. Check your connection and try again.</p>
+        <p class="err" id="wl-consent-err" data-role="consent-err" hidden>Check the box to agree to receive updates.</p>
+        <p class="err" id="wl-send-err" data-role="send-err" hidden role="alert">We couldn't save your sign-up. Check your connection and try again.</p>
         <button class="btn btn-primary" type="submit">Join the waitlist</button>
         <p class="form-legal">By joining, you agree to our <a href="{{root}}legal/terms.html">Terms of use</a>. See our <a href="{{root}}legal/privacy.html">Privacy notice</a> for how we handle your information.</p>
       </form>

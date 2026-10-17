@@ -4,10 +4,6 @@ description: Cuenta de cheques, ahorros, tarjetas de débito y transferencias pr
 nav: banking
 layout: marketing
 -->
-<svg class="picado small" viewBox="0 0 1220 120" preserveAspectRatio="xMidYMin slice" aria-hidden="true" focusable="false">
-  <path d="M0 10 Q610 34 1220 10" fill="none" style="stroke: var(--ink-soft)" stroke-width="1.5"/>
-  <g data-flags></g>
-</svg>
 <section class="page-hero">
   <div class="wrap">
     <p class="eyebrow">Banca</p>
@@ -18,7 +14,7 @@ layout: marketing
 
 <section class="section band" aria-label="Cuentas, tarjetas y transferencias">
   <div class="wrap">
-    <div class="split">
+    <div class="split" id="checking">
       <div class="split-copy">
         <p class="eyebrow">Cuenta de cheques</p>
         <h2>Primero, lo que puedes gastar</h2>
@@ -32,7 +28,7 @@ layout: marketing
       </ul>
     </div>
 
-    <div class="split">
+    <div class="split" id="savings">
       <div class="split-copy">
         <p class="eyebrow">Ahorros</p>
         <h2>Metas de ahorro con nombre, no con números</h2>
@@ -46,7 +42,7 @@ layout: marketing
       </ul>
     </div>
 
-    <div class="split">
+    <div class="split" id="cards">
       <div class="split-copy">
         <p class="eyebrow">Tarjetas de débito</p>
         <h2>Una tarjeta virtual al instante y una física por correo</h2>
@@ -60,7 +56,7 @@ layout: marketing
       </ul>
     </div>
 
-    <div class="split">
+    <div class="split" id="transfers">
       <div class="split-copy">
         <p class="eyebrow">Mover dinero</p>
         <h2>Sabe cuándo llegará tu dinero</h2>
@@ -76,7 +72,7 @@ layout: marketing
   </div>
 </section>
 
-<section class="section" aria-labelledby="overdraft-title">
+<section class="section" id="overdraft" aria-labelledby="overdraft-title">
   <div class="wrap">
     <div class="section-head">
       <p class="eyebrow">Si te falta dinero</p>

@@ -3,21 +3,17 @@ title: Únete a la lista de espera
 description: Recibe noticias sobre el lanzamiento de TANDA en California y Texas, en español o en inglés.
 layout: marketing
 -->
-<svg class="picado small" viewBox="0 0 1220 120" preserveAspectRatio="xMidYMin slice" aria-hidden="true" focusable="false">
-  <path d="M0 10 Q610 34 1220 10" fill="none" style="stroke: var(--ink-soft)" stroke-width="1.5"/>
-  <g data-flags></g>
-</svg>
 <section class="section waitlist" aria-labelledby="waitlist-title">
   <div class="wrap">
     <div class="waitlist-copy">
       <p class="eyebrow">Lista de espera</p>
-      <h1 id="waitlist-title" style="font-size: var(--step-3); font-weight: 800">Entérate primero cuando abramos</h1>
+      <h1 id="waitlist-title" style="font-size: var(--step-4)">Entérate primero cuando abramos</h1>
       <p>Te enviaremos noticias de vez en cuando sobre nuestro avance, en el idioma que elijas. Puedes darte de baja cuando quieras.</p>
       <p class="notice">Esto no es una solicitud de cuenta. En esta lista de espera nunca te pediremos tu número de Seguro Social, ITIN, datos bancarios ni contraseña.</p>
     </div>
 
     <div>
-      <form class="join" id="join" novalidate data-endpoint="">
+      <form class="join" id="join" novalidate data-endpoint="{{endpoint}}" data-thanks="thanks">
         <div class="field-row">
           <div class="field">
             <label for="wl-name">Nombre <span class="hint">(opcional)</span></label>
@@ -25,8 +21,8 @@ layout: marketing
           </div>
           <div class="field">
             <label for="wl-email">Correo electrónico</label>
-            <input type="email" id="wl-email" name="email" autocomplete="email" required aria-describedby="wl-email-err">
-            <p class="err" id="wl-email-err" hidden>Escribe un correo electrónico como nombre@ejemplo.com.</p>
+            <input type="email" id="wl-email" name="email" data-role="email" autocomplete="email" required aria-describedby="wl-email-err">
+            <p class="err" id="wl-email-err" data-role="email-err" hidden>Escribe un correo electrónico como nombre@ejemplo.com.</p>
           </div>
         </div>
         <div class="field">
@@ -45,11 +41,11 @@ layout: marketing
           </div>
         </fieldset>
         <label class="consent" for="wl-consent">
-          <input type="checkbox" id="wl-consent" name="consent" required aria-describedby="wl-consent-err">
+          <input type="checkbox" id="wl-consent" name="consent" data-role="consent" required aria-describedby="wl-consent-err">
           <span>Acepto recibir noticias de TANDA por correo electrónico. Entiendo que esto no es una solicitud de cuenta.</span>
         </label>
-        <p class="err" id="wl-consent-err" hidden>Marca la casilla para aceptar recibir noticias.</p>
-        <p class="err" id="wl-send-err" hidden role="alert">No pudimos guardar tu registro. Revisa tu conexión e inténtalo de nuevo.</p>
+        <p class="err" id="wl-consent-err" data-role="consent-err" hidden>Marca la casilla para aceptar recibir noticias.</p>
+        <p class="err" id="wl-send-err" data-role="send-err" hidden role="alert">No pudimos guardar tu registro. Revisa tu conexión e inténtalo de nuevo.</p>
         <button class="btn btn-primary" type="submit">Unirme a la lista de espera</button>
         <p class="form-legal">Al unirte, aceptas nuestros <a href="{{root}}legal/terms.html">Términos de uso</a>. Consulta nuestro <a href="{{root}}legal/privacy.html">Aviso de privacidad</a> para saber cómo manejamos tu información.</p>
       </form>

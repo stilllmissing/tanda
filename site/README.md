@@ -20,7 +20,9 @@ python3 -m http.server -d site 8000   # preview at http://localhost:8000
 
 Pages: home, Banking, Help & safety, Pricing, About, FAQ, Waitlist, and the legal section: Legal center, Important disclosures, Privacy notice, Terms of use, Accessibility statement. Spanish versions are under `/es/`.
 
-**Layouts:** `marketing` uses the brand treatment (papel picado, folk-art flowers). `legal` is a plain document layout with breadcrumbs, last-updated date, a table of contents built from `<h2>` headings, and print styles.
+**Design:** the theme follows the TANDA document set: Aptos type (Albert Sans as the web fallback), the Brand Identity Guidelines palette (Verde Mercado on Crema, Tinta text, Rojo Chile wordmark, Azul Talavera table headers), and small uppercase running labels. The layout follows a full-service bank site: utility bar, header with mega menus (defined in `NAV` in the build script), a home hero with a waitlist side panel, a quick-link icon row, promo cards and a dense footer.
+
+**Layouts:** `marketing` pages get breadcrumbs added to their `page-hero`. `legal` is a plain document layout with breadcrumbs, last-updated date, a table of contents built from `<h2>` headings, and print styles.
 
 **Disclosure references:** superscript numbers on marketing pages link to the matching numbered section of `legal/disclosures.html` (for example, `#d6` for TANDA Spot). Keep the numbers in sync if you add or reorder sections.
 
@@ -32,7 +34,7 @@ Pages: home, Banking, Help & safety, Pricing, About, FAQ, Waitlist, and the lega
 
 - [ ] **Legal review.** The disclosures, privacy notice, terms and accessibility statement are drafts written from the PRD and MRD. Counsel and the partner bank must review them, including governing law and any dispute-resolution terms.
 - [ ] **Contact details.** Fill in `CONTACT` (and `SITE_URL` for canonical/hreflang tags) at the top of `scripts/build_site.py`, then rebuild. Until then, legal pages say contact details will be published before accounts open.
-- [ ] **Waitlist endpoint.** Set `data-endpoint` on `<form id="join">` in both `waitlist.html` sources to a URL that accepts a JSON `POST`. **Until it's set, sign-ups are not sent anywhere**, though visitors still see the confirmation.
+- [ ] **Waitlist endpoint.** Set `WAITLIST_ENDPOINT` at the top of `scripts/build_site.py` to a URL that accepts a JSON `POST`, then rebuild. This covers both the home-page panel and the waitlist page. **Until it's set, sign-ups are not sent anywhere**, though visitors still see the confirmation.
 - [ ] **Privacy notice accuracy.** Update it if you add analytics, cookies or an email provider.
 - [ ] **Spanish.** Get a professional translation review. The current Spanish is a draft.
 - [ ] **Partner bank.** Name it only once it is contracted and approved.
