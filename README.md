@@ -29,6 +29,10 @@ TANDA is a concept for a bilingual (English/Spanish), digital-first U.S. consume
 | Rosa Guayaba | `#EBA38D` |
 | Crema | `#F3E7CF` |
 
+## Website
+
+The pre-launch marketing site is in [`site/`](site/). It's a static bilingual page with a waitlist. See [`site/README.md`](site/README.md) for setup and the pre-launch checklist.
+
 ## Documents
 
 See [`docs/README.md`](docs/README.md) for the full index.
