@@ -12,7 +12,7 @@ python3 -m http.server -d site 8000
 
 ## Deploy on Vercel
 
-`vercel.json` at the repo root tells Vercel this is a static site: no framework, no install or build step, and `site/` is the output directory. Leave the project's Root Directory as the repo root.
+`vercel.json` at the repo root serves `site/` with Vercel's static builder. Its `builds` setting overrides the dashboard's framework preset, install and build commands, so nothing gets installed or built. Leave the project's Root Directory as the repo root.
 
 ## How it works
 
