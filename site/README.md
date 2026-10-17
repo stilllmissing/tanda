@@ -10,6 +10,10 @@ Open `index.html` in a browser, or serve the folder with any static host (GitHub
 python3 -m http.server -d site 8000
 ```
 
+## Deploy on Vercel
+
+`vercel.json` at the repo root tells Vercel this is a static site: no framework, no install or build step, and `site/` is the output directory. Leave the project's Root Directory as the repo root.
+
 ## How it works
 
 - **Language:** English is in the HTML. Spanish lives in the `es` dictionary in the inline script. Keys match the `data-i18n` attributes. The visitor's choice is remembered. A `#es` link opens the site in Spanish, and Spanish browsers default to it.
